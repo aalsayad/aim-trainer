@@ -8,4 +8,5 @@
 .box_random {
   background-color: #ffffff10;
   border: 1px solid #ffffff13;
+  cursor: pointer;
 }
