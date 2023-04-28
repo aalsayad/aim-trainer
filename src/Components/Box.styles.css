@@ -1,0 +1,10 @@
+.box {
+  border: 1px solid #e8ea8803;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.box_random {
+  background-color: #ffffff16;
+}
