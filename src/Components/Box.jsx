@@ -1,21 +1,15 @@
-import React from 'react';
 import './Box.styles.css';
+import missSFX from '../assets/miss.wav';
 
 function Box(props) {
-  if (props.random) {
-    console.log(
-      `I am box ${props.index} & I am random`
-    );
-  }
+  const miss = new Audio(missSFX);
 
   const handleTargetAttempt = () => {
     if (props.random === true) {
-      console.log(
-        'Correct Target Clicked! LETS GO!'
-      );
       props.targetClicked();
+      props.setScore((prev) => prev + 1);
     } else {
-      console.log('Target Missed');
+      miss.play();
     }
   };
 
@@ -25,12 +19,8 @@ function Box(props) {
         draggable='false'
         onClick={handleTargetAttempt}
         key={props.index}
-        className={`box ${
-          props.random && 'box_random'
-        }`}
-      >
-        {/* {props.index} */}
-      </div>
+        className={`box ${props.random && 'box_random'}`}
+      ></div>
     </>
   );
 }
