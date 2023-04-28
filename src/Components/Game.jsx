@@ -103,7 +103,7 @@ function Game() {
         <div className='game_ui-container'>
           <Header />
           <div className='game_controls'>
-            <div className='game_controls-group'>
+            <div className={!sessionStarted ? 'game_controls-group' : 'game_controls-group menu_inactive'}>
               {difficulty.map((mode, index) => (
                 <TextButton
                   key={index}
@@ -116,6 +116,7 @@ function Game() {
                 />
               ))}
             </div>
+
             <div className='game_controls-group'>
               <button className={`game_btn ${sessionStarted ? 'btn_inactive' : ''}`} onClick={handleStartSession}>
                 <MdPlayCircleOutline />

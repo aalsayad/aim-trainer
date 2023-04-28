@@ -83,3 +83,8 @@
 .game_score span {
   color: rgb(250, 212, 90);
 }
+
+.menu_inactive {
+  opacity: 0.2;
+  pointer-events: none;
+}
