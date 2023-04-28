@@ -2,26 +2,37 @@ import { useEffect, useState } from 'react';
 import './Game.styles.css';
 import Box from './Box';
 import Header from './Header';
-import popSFX from '../assets/Pop Item Appear.wav';
 import { MdPlayCircleOutline, MdStop } from 'react-icons/md';
+import TextButton from './TextButton';
+import successSFX from '../assets/Pop Item Appear.wav';
+import failSFX from '../assets/miss.wav';
 
 function Game() {
-  //Define Audio SFX
-  const pop = new Audio(popSFX);
-
   //Array of Boxes/Possible Targets in-game canvas
   const [boxesArray, setBoxesArray] = useState([]);
-
   //Track Game Session
   const [sessionStarted, setSessionStarted] = useState(false);
-
   //Track Randomly Picked Number
   const [lastPickedNumber, setLastPickedNumber] = useState(0);
+  //Track Player Score
+  const [score, setScore] = useState(0);
+  //Difficulty Settings
+  const [difficulty, setDifficulty] = useState([
+    { name: 'Easy', targets: 49, selected: true },
+    { name: 'Medium', targets: 100, selected: false },
+    { name: 'Hard', targets: 169, selected: false },
+    { name: 'Pro', targets: 289, selected: false },
+  ]);
+  //track success
+  const [success, setSuccess] = useState(1);
 
-  //Reset All to array of boxes with 16 boxes
+  //Set difficulty
+  const [numberOfTargets, setNumberOfTargets] = useState(difficulty[0].targets);
+
+  //Reset All to array of boxes with the corresponding number of boxes in accordance to difficulty
   const drawBoxes = () => {
     const newBoxesArray = [];
-    for (let i = 1; i <= 16; i++) {
+    for (let i = 1; i <= numberOfTargets; i++) {
       newBoxesArray.push({
         index: i,
       });
@@ -29,21 +40,28 @@ function Game() {
     setBoxesArray(newBoxesArray);
   };
 
-  //TrackScore
-  const [score, setScore] = useState(0);
-
-  //Fill Initial Array of boxes with 16 boxes (Easy Mode)
+  //Fill Initial Array of boxes with the corresponding number of boxes in accordance to difficulty
   useEffect(() => {
     drawBoxes();
-  }, []);
+  }, [difficulty]);
+
+  //Play Music
+  useEffect(() => {
+    if (success) {
+      const success = new Audio(successSFX);
+      success.play();
+    } else {
+      const fail = new Audio(failSFX);
+      fail.play();
+    }
+  }, [success]);
 
   //Init the random select of a target box
   const newTarget = () => {
-    pop.play();
     let randomlyPickedBox = 0;
-    //Pick Random Number between 1 & 16
+    //Pick Random Number between 1 & set number of boxes according to difficulty
     while (randomlyPickedBox === lastPickedNumber || randomlyPickedBox === 0) {
-      randomlyPickedBox = Math.floor(Math.random() * 16) + 1;
+      randomlyPickedBox = Math.floor(Math.random() * numberOfTargets) + 1;
     }
 
     //Keep Track of the picked number
@@ -68,7 +86,6 @@ function Game() {
 
   //Start Game Session
   const handleStartSession = () => {
-    console.log('Game Session Started');
     setScore(0);
     setSessionStarted(true);
     newTarget();
@@ -76,7 +93,6 @@ function Game() {
 
   //Stop Game Session
   const handleStopSession = () => {
-    console.log('Game Session Stopped');
     setSessionStarted(false);
     drawBoxes();
   };
@@ -87,7 +103,20 @@ function Game() {
         <div className='game_ui-container'>
           <Header />
           <div className='game_controls'>
-            <div className='game_controls_left-box'>
+            <div className='game_controls-group'>
+              {difficulty.map((mode, index) => (
+                <TextButton
+                  key={index}
+                  name={mode.name}
+                  difficulty={difficulty}
+                  setDifficulty={setDifficulty}
+                  selected={mode.selected}
+                  targets={mode.targets}
+                  setNumberOfTargets={setNumberOfTargets}
+                />
+              ))}
+            </div>
+            <div className='game_controls-group'>
               <button className={`game_btn ${sessionStarted ? 'btn_inactive' : ''}`} onClick={handleStartSession}>
                 <MdPlayCircleOutline />
               </button>
@@ -103,7 +132,13 @@ function Game() {
             </div>
           </div>
           <div className='stats_container'></div>
-          <div className='trainer_container'>
+          <div
+            className='trainer_container'
+            style={{
+              gridTemplateColumns: `repeat(${Math.sqrt(numberOfTargets)}, 1fr)`,
+              gridTemplateRows: `repeat(${Math.sqrt(numberOfTargets)}, 1fr)`,
+            }}
+          >
             {boxesArray.map((box) => (
               <Box
                 key={box.index}
@@ -111,6 +146,7 @@ function Game() {
                 random={box.random}
                 targetClicked={newTarget}
                 setScore={setScore}
+                setSuccess={setSuccess}
               />
             ))}
           </div>

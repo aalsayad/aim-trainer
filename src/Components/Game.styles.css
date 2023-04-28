@@ -12,8 +12,8 @@
   border: 1px solid #ffffff15;
   border-radius: 20px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(4, 1fr);
+  /* grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr); */
   overflow: hidden;
 }
 
@@ -26,9 +26,10 @@
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   border-top: 1px solid #ffffff15;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   align-items: center;
-  justify-content: space-between;
+  justify-items: center;
   overflow: hidden;
 }
 
@@ -57,7 +58,7 @@
   color: rgb(250, 212, 90);
 }
 
-.game_controls_left-box {
+.game_controls-group {
   display: flex;
 }
 
