@@ -7,11 +7,14 @@ import TextButton from './TextButton';
 import successSFX from '../assets/Pop Item Appear.wav';
 import failSFX from '../assets/miss.wav';
 
+const timerCount = 30;
 function Game() {
   //Array of Boxes/Possible Targets in-game canvas
   const [boxesArray, setBoxesArray] = useState([]);
   //Track Game Session
   const [sessionStarted, setSessionStarted] = useState(false);
+  //Track Game Time
+  const [sessionTimer, setSessionTimer] = useState(timerCount);
   //Track Randomly Picked Number
   const [lastPickedNumber, setLastPickedNumber] = useState(0);
   //Track Player Score
@@ -48,13 +51,21 @@ function Game() {
   //Play Music
   useEffect(() => {
     if (success) {
-      const success = new Audio(successSFX);
-      success.play();
+      const successFx = new Audio(successSFX);
+      successFx.play();
     } else {
-      const fail = new Audio(failSFX);
-      fail.play();
+      const failFx = new Audio(failSFX);
+      failFx.play();
     }
   }, [success]);
+
+  // If session Timer Reaches Zero we stop the game session
+  useEffect(() => {
+    if (sessionTimer === 0) {
+      // alert(score);
+      handleStopSession();
+    }
+  }, [sessionTimer]);
 
   //Init the random select of a target box
   const newTarget = () => {
@@ -84,6 +95,22 @@ function Game() {
     );
   };
 
+  useEffect(() => {
+    let sessionInterval;
+    if (sessionStarted) {
+      sessionInterval = setInterval(() => {
+        setSessionTimer((prev) => prev - 1);
+      }, 1000);
+    } else {
+      alert(`You Got ${score}`);
+      handleStopSession();
+      setSessionTimer(timerCount);
+      clearInterval(sessionInterval);
+    }
+
+    return () => clearInterval(sessionInterval);
+  }, [sessionStarted]);
+
   //Start Game Session
   const handleStartSession = () => {
     setScore(0);
@@ -103,7 +130,11 @@ function Game() {
         <div className='game_ui-container'>
           <Header />
           <div className='game_controls'>
-            <div className={!sessionStarted ? 'game_controls-group' : 'game_controls-group menu_inactive'}>
+            <div
+              className={
+                !sessionStarted ? 'game_controls-group' : 'game_controls-group menu_inactive'
+              }
+            >
               {difficulty.map((mode, index) => (
                 <TextButton
                   key={index}
@@ -118,7 +149,10 @@ function Game() {
             </div>
 
             <div className='game_controls-group'>
-              <button className={`game_btn ${sessionStarted ? 'btn_inactive' : ''}`} onClick={handleStartSession}>
+              <button
+                className={`game_btn ${sessionStarted ? 'btn_inactive' : ''}`}
+                onClick={handleStartSession}
+              >
                 <MdPlayCircleOutline />
               </button>
               <button
@@ -128,6 +162,10 @@ function Game() {
                 <MdStop />
               </button>
             </div>
+            <div className='game_score'>
+              Timer: <span>{sessionTimer}</span>
+            </div>
+
             <div className='game_score'>
               Score: <span>{score}</span>
             </div>
