@@ -1,7 +1,9 @@
 import './Box.styles.css';
 
 function Box(props) {
-  const handleTargetAttempt = () => {
+  const handleTargetAttempt = (e) => {
+    e.preventDefault();
+
     if (props.random === true) {
       props.targetClicked();
       props.setScore((prev) => prev + 1);
@@ -15,7 +17,7 @@ function Box(props) {
     <>
       <div
         draggable='false'
-        onClick={handleTargetAttempt}
+        onMouseDown={handleTargetAttempt}
         key={props.index}
         className={`box ${props.random && 'box_random'}`}
       ></div>

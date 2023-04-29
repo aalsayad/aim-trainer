@@ -21,6 +21,8 @@ function Game() {
   const [score, setScore] = useState(0);
   //Display Scoreboard after game session
   const [scoreboard, setScoreboard] = useState(false);
+  //game session score tracker
+  const [scoreTracker, setScoreTracker] = useState([]);
 
   //Difficulty Settings
   const [difficulty, setDifficulty] = useState([
