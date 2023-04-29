@@ -144,6 +144,7 @@ function Game() {
                   selected={mode.selected}
                   targets={mode.targets}
                   setNumberOfTargets={setNumberOfTargets}
+                  setScoreboard={setScoreboard}
                 />
               ))}
             </div>

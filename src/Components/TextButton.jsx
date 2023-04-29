@@ -3,6 +3,7 @@ import './TextButton.styles.css';
 function TextButton(props) {
   console.log();
   const handleDifficultySelect = () => {
+    props.setScoreboard(false);
     props.setNumberOfTargets(props.targets);
     props.setDifficulty(
       props.difficulty.map((option) => {
