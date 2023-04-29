@@ -19,6 +19,9 @@ function Game() {
   const [lastPickedNumber, setLastPickedNumber] = useState(0);
   //Track Player Score
   const [score, setScore] = useState(0);
+  //Display Scoreboard after game session
+  const [scoreboard, setScoreboard] = useState(false);
+
   //Difficulty Settings
   const [difficulty, setDifficulty] = useState([
     { name: 'Easy', targets: 49, selected: true },
@@ -59,13 +62,29 @@ function Game() {
     }
   }, [success]);
 
-  // If session Timer Reaches Zero we stop the game session
+  //Stop Game Session when timer reaches 0
   useEffect(() => {
     if (sessionTimer === 0) {
-      // alert(score);
       handleStopSession();
     }
   }, [sessionTimer]);
+
+  //Interval timer / Count down of the game timer
+  useEffect(() => {
+    let sessionInterval;
+    if (sessionStarted) {
+      sessionInterval = setInterval(() => {
+        setSessionTimer((prev) => prev - 1);
+      }, 1000);
+    } else {
+      setScoreboard(true);
+      handleStopSession();
+      setSessionTimer(timerCount);
+      clearInterval(sessionInterval);
+    }
+
+    return () => clearInterval(sessionInterval);
+  }, [sessionStarted]);
 
   //Init the random select of a target box
   const newTarget = () => {
@@ -95,24 +114,9 @@ function Game() {
     );
   };
 
-  useEffect(() => {
-    let sessionInterval;
-    if (sessionStarted) {
-      sessionInterval = setInterval(() => {
-        setSessionTimer((prev) => prev - 1);
-      }, 1000);
-    } else {
-      alert(`You Got ${score}`);
-      handleStopSession();
-      setSessionTimer(timerCount);
-      clearInterval(sessionInterval);
-    }
-
-    return () => clearInterval(sessionInterval);
-  }, [sessionStarted]);
-
   //Start Game Session
   const handleStartSession = () => {
+    setScoreboard(false);
     setScore(0);
     setSessionStarted(true);
     newTarget();
@@ -130,11 +134,7 @@ function Game() {
         <div className='game_ui-container'>
           <Header />
           <div className='game_controls'>
-            <div
-              className={
-                !sessionStarted ? 'game_controls-group' : 'game_controls-group menu_inactive'
-              }
-            >
+            <div className={!sessionStarted ? 'game_controls-group' : 'game_controls-group menu_inactive'}>
               {difficulty.map((mode, index) => (
                 <TextButton
                   key={index}
@@ -149,10 +149,7 @@ function Game() {
             </div>
 
             <div className='game_controls-group'>
-              <button
-                className={`game_btn ${sessionStarted ? 'btn_inactive' : ''}`}
-                onClick={handleStartSession}
-              >
+              <button className={`game_btn ${sessionStarted ? 'btn_inactive' : ''}`} onClick={handleStartSession}>
                 <MdPlayCircleOutline />
               </button>
               <button
@@ -178,6 +175,12 @@ function Game() {
               gridTemplateRows: `repeat(${Math.sqrt(numberOfTargets)}, 1fr)`,
             }}
           >
+            {scoreboard && (
+              <div className='trainer_scoreboard'>
+                Your Score: <span>{score}</span>
+              </div>
+            )}
+
             {boxesArray.map((box) => (
               <Box
                 key={box.index}
